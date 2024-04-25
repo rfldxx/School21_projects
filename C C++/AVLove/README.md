@@ -16,7 +16,7 @@
 Оценим сколько требуется, чтобы проитерироваться плюс-плюсом от $\text{b} \text{egin}()$ до $\text{e} \text{nd}()$. \
 Рассматрим идеальное дерево с $n = 2^h$ вершинами:
 
-<img src="images/iterating_throw_tree.png" alt="drawing" style="width:300px;"/>
+<img src="images/iterating_throw_tree.png" alt="iterating_throw_tree" style="width:300px;"/>
 
 Отсюда получаем рекуретное соотношение: $a_{h+1} = a_h + h + h + a_h = 2 \cdot (a_h + h)$ \
 Подставляя несколько раз, замечаем:
