@@ -60,7 +60,7 @@ $\text{ }$
 
 ### Построение дерева из "массива"
 
-<img src="images/bilding_tree.png" alt="iterating_throw_tree" style="width:300px;"/>
+<img src="images/bilding_tree.png" alt="bilding_tree" style="width:300px;"/>
 
 Нас интересует как по номеру $i$ в массиве узнать на какой высоте $k$ будет расположенна вершина (будем нумеровать $i$ от $1$, а $k$ от $0$). \
 Можно заметить, что высота определяется из условия:  $(i - 2^k) \text{ } \text{ } \vdots \text{ } \text{ } 2^{k+1}$ \
