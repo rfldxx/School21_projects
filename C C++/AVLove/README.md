@@ -55,6 +55,20 @@ $(*)$ Рассмотрим $\sum q ^ {\alpha \cdot k}$:
 &nbsp; $\Rightarrow$ $\text{ }$ $\sum\limits_{k=1}^{n-1} k \cdot q^k$  $\text{ } = \text{ }$   $\frac{(n-1) q^{n+1} - n q^n + q} {(1-q)^2}$
 
 ---
+
+$\text{ }$
+
+### Построение дерева из "массива"
+
+<img src="images/bilding_tree.png" alt="iterating_throw_tree" style="width:300px;"/>
+
+Нас интересует как по номеру $i$ в массиве узнать на какой высоте $k$ будет расположенна вершина (будем нумеровать $i$ от $1$, а $k$ от $0$). \
+Можно заметить, что высота определяется из условия:  $(i - 2^k) \text{ } \text{ } \vdots \text{ } \text{ } 2^{k+1}$ \
+$\text{ } \text{ }$  $\Rightarrow \text{ } (i - 2^k) \text{ } = \text{ } 2^{k+1} \cdot t$   $\text{ } \text{ }$  $\Rightarrow \text{ } i = 2^k \cdot (2t - 1)$
+
+Т.е. высота - это количество завершающих нулей в двоичной записи индекса $i$
+
+---
 ### Source:
 - Про наивное дерево поиска и AVL-дерево: https://www.youtube.com/watch?v=cuEwDXwh300
 
