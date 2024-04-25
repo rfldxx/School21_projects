@@ -37,7 +37,7 @@ $\text{ } \stackrel{(*)}{=} \text{ }$   $\text{ . . . }$   $\text{ } = \text{ }$
 </tr> </table>
 
 Оценивая сверху возьмем глубину $h \approx \ln_{\varphi} n$ $\text{ }$  $\Rightarrow$  $\text{ }$
-$a_h \approx n \cdot 2 ^ {\frac{ \ln 2 \varphi} {\ln \varphi} } \approx 5.43 n$
+$a_h \approx  2 ^ {\frac{ \ln 2 \varphi} {\ln \varphi} } \cdot n \approx 5.43 n$
 
 $\text{ }$
 
