@@ -41,7 +41,16 @@ $a_h \approx n \cdot 2 ^ {\frac{ \ln 2 \varphi} {\ln \varphi} } \approx 5.43 n$
 
 $\text{ }$
 
-$(*)$
+$(*)$ Рассмотрим $\sum q ^ {\alpha \cdot k}$: 
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ◦  &nbsp;  $\frac{\partial}{\partial \alpha} \sum q ^ {\alpha \cdot k}$   $\text{ } = \text{ }$
+                        $\sum \frac{\partial}{\partial \alpha} e ^ {\alpha \cdot k \ln q}$   $\text{ } = \text{ }$
+                        $\sum k \ln{q} \text{ } q ^ {\alpha \cdot k}$ 
+                        
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ◦  &nbsp;  $\frac{\partial}{\partial \alpha} \sum\limits_{k = 0}^{n-1} q^{\alpha k}$   $\text{ } = \text{ }$
+                        $\frac{\partial}{\partial \alpha} \frac{1 - q^{\alpha n}}{1 - q^{\alpha \text{ }}}$ $\text{ } = \text{ }$   $...$
+                       
+&nbsp; $\Rightarrow$ $\text{ }$ $\sum\limits_{k=1}^{n-1} k \cdot q^k$  $\text{ } = \text{ }$   $\frac{(n-1) q^{n+1} - n q^n + q} {(1-q)^2}$
 
 ---
 ### Source:
