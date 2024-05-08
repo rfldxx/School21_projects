@@ -12,6 +12,19 @@ struct map_cmp {
 };
 
 
+template <class T_set_1, class T_set_2>
+bool check_sets(T_set_1& a, T_set_2& b) {
+    // [a] in [b]
+    for(auto p = a.begin(); p != a.end(); ++p) 
+        if( *(b.find(*p)) != *p ) return 0;
+    
+    // [b] in [a]
+    for(auto p = b.begin(); p != b.end(); ++p) 
+        if( *(a.find(*p)) != *p ) return 0;
+
+    return 1;
+}
+
 template<typename TreeIterator>
 pair<int, bool> calc_h(TreeIterator iter) {
     if(!iter.currr()) return {0, 0};
@@ -21,7 +34,9 @@ pair<int, bool> calc_h(TreeIterator iter) {
     return {rh + 1, rh - lh <= 1};
 }
 
-
+#define  FIRST(a, ...) a
+#define NFIRST(a, ...) ,##__VA_ARGS__
+#define RET(...) { printf(FIRST(__VA_ARGS__) "\n" NFIRST(__VA_ARGS__)); fflush(stdout); return; }
 void test_updt_h(int count_of_test, int chance_to_del) {
     tree<char, my_cmp<char>> test;
     set<char> ideal;
@@ -44,44 +59,30 @@ void test_updt_h(int count_of_test, int chance_to_del) {
             something_happens = test.erase (x);
             ideal.erase(x);
             
-//            printf(">>> Erase  %c\n", x);
-//            vlr(test.zero.next[0]);
             
         } else {
             auto [pp, tt] = test.insert(x);
-            if(*pp != x) { printf("Fail position in insert\n"); return; }
+            if(*pp != x) RET("Fail position in insert");
             something_happens = tt;
 
             ideal.insert(x);
             
-//            printf(">>> Insert %c\n", x);
-//            vlr(test.zero.next[0]);
         }
 
-        // [test] in [ideal]
-        for(auto p = test.begin(); p != test.end(); ++p) {
-            char finding = *p;
-            if(!ideal.count(finding)) { printf("Waste elements in tree\n"); return; }
-        }
-
-        // [ideal] in [test]
-        for(auto elem : ideal) {
-            auto prev = test.find(elem);
-            if( *prev != elem ) { printf("Tree didn't contain all the elements\n"); return; }
-        }
+        if( !check_sets(test, ideal) ) RET("NOT EQUAL SETS!!!!!");
 
         i += something_happens;
 
         int max_h = 0, curr_n = 0;
         for(auto p = test.begin(); p != test.end(); ++p) {
             auto [curr_h, AVLcheck] = calc_h(p);
-            if(p.hight() != curr_h) { printf("FATTALL ERROR with hight!!!!!\n"); return; }
-            if( !AVLcheck ) { printf("NOT A AVL TREE!!!!!\n"); return; }
+            if(p.hight() != curr_h) RET("FATTALL ERROR with hight!!!!!");
+            if( !AVLcheck ) RET("NOT A AVL TREE!!!!!");
 
             max_h = max(p.hight(), max_h);
             curr_n++;
         }
-        if(max_h+1 != test.end().hight() ) { printf("ERROR WITH ROOT!!!!!  %d != %d\n",  test.end().hight(), max_h+1); return; }
+        if(max_h+1 != test.end().hight() ) RET("ERROR WITH hight of ROOT!!!!!  %d != %d\n",  test.end().hight(), max_h+1);
 
 
         if(!something_happens) continue;
