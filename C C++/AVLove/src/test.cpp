@@ -1,5 +1,13 @@
 #include "AVLtree.h"
 
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <set>
+
+#include <chrono>
+
+
 template<typename T>
 struct my_cmp {
     bool operator() (T a, T b) { return a < b; }
@@ -33,6 +41,18 @@ pair<int, bool> calc_h(TreeIterator iter) {
     if(lh > rh) swap(lh, rh);
     return {rh + 1, rh - lh <= 1};
 }
+
+
+
+// Супер не поканонам, чисто для быстренького теста
+#define CURR_TYPE tree<char, my_cmp<char>>
+#define FUNC_NAME tree_test
+#include "test.h"
+#undef  CURR_TYPE
+#undef  FUNC_NAME
+#define CURR_TYPE set<char>
+#define FUNC_NAME set_test
+#include "test.h"
 
 #define  FIRST(a, ...) a
 #define NFIRST(a, ...) ,##__VA_ARGS__
@@ -96,7 +116,27 @@ void test_updt_h(int count_of_test, int chance_to_del) {
     printf("  <h> = %4lf  <n> = %4lf", sum_h * 1. / count, sum_n * 1. / count); fflush(stdout);
 }
 
+
+
 int main() {
+    {
+        printf("TIME TEST TREE: "); 
+        auto start = chrono::high_resolution_clock::now();
+        for(int chance = 5; chance < 91; chance++)  tree_test(100000, chance);
+        auto stop = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        cout << duration.count() << endl;
+    }
+    {
+        printf("TIME TEST SET : "); 
+        auto start = chrono::high_resolution_clock::now();
+        for(int chance = 5; chance < 91; chance++)  set_test(100000, chance);
+        auto stop = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        cout << duration.count() << endl;
+    }
+
+
 
 #ifdef TEST
     for(int chance = 5; chance < 91; chance++) {

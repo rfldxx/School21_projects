@@ -1,9 +1,4 @@
-#include <iostream>
-#include <cstring>
 #include <stack>    // for tree.delete_tree()
-#include <vector>
-#include <set>
-
 #include <functional> // for compare
 
 using namespace std;

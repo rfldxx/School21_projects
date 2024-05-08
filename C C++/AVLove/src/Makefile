@@ -1,5 +1,5 @@
 test:
-	g++ test.cpp -std=c++17 -DTEST -O2 
+	g++ test.cpp -std=c++17 -DTEST -O2
 	./a.out
 
 
