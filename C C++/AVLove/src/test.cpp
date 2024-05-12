@@ -1,4 +1,5 @@
 #include "AVLtree.h"
+#include "over_avl.h"
 
 #include <iostream>
 #include <cstring>
@@ -43,109 +44,52 @@ pair<int, bool> calc_h(TreeIterator iter) {
 }
 
 
-
-// Супер не поканонам, чисто для быстренького теста
-#define CURR_TYPE tree<char, my_cmp<char>>
-#define FUNC_NAME tree_test
+#define  CAT(...) wCAT(__VA_ARGS__)
+#define wCAT(a, b) a##b
+#define NAME trust
 #include "test.h"
-#undef  CURR_TYPE
-#undef  FUNC_NAME
-#define CURR_TYPE set<char>
-#define FUNC_NAME set_test
+#undef  NAME
+#define NAME verify  
+#define CHECKING
 #include "test.h"
 
-#define  FIRST(a, ...) a
-#define NFIRST(a, ...) ,##__VA_ARGS__
-#define RET(...) { printf(FIRST(__VA_ARGS__) "\n" NFIRST(__VA_ARGS__)); fflush(stdout); return; }
-void test_updt_h(int count_of_test, int chance_to_del) {
-    tree<char, my_cmp<char>> test;
-    set<char> ideal;
 
-    vector<char> values;
-    int n = 80;
-    for(int i = 0; i < n; i++) {
-        values.push_back('#'+i);
-        test.insert('#'+i);
-        ideal.insert('#'+i);
-    }
+#define START(T) {                                      \
+    printf("TIME  TEST %10s:  ", #T); fflush(stdout);    \
+    auto start = chrono::high_resolution_clock::now();
 
-    int sum_h = 0, sum_n = 0, count = 0;
+#define END                                             \
+    auto stop  = chrono::high_resolution_clock::now();  \
+    cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count() << endl; }
 
-    for(int i = 0; i < count_of_test; ) {
-        bool something_happens;
-        bool mode = (rand()%101 < chance_to_del);
-        char x = values[rand()%n];
-        if( rand()%101 < chance_to_del ) {
-            something_happens = test.erase (x);
-            ideal.erase(x);
-            
-            
-        } else {
-            auto [pp, tt] = test.insert(x);
-            if(*pp != x) RET("Fail position in insert");
-            something_happens = tt;
-
-            ideal.insert(x);
-            
-        }
-
-        if( !check_sets(test, ideal) ) RET("NOT EQUAL SETS!!!!!");
-
-        i += something_happens;
-
-        int max_h = 0, curr_n = 0;
-        for(auto p = test.begin(); p != test.end(); ++p) {
-            auto [curr_h, AVLcheck] = calc_h(p);
-            if(p.hight() != curr_h) RET("FATTALL ERROR with hight!!!!!");
-            if( !AVLcheck ) RET("NOT A AVL TREE!!!!!");
-
-            max_h = max(p.hight(), max_h);
-            curr_n++;
-        }
-        if(max_h+1 != test.end().hight() ) RET("ERROR WITH hight of ROOT!!!!!  %d != %d\n",  test.end().hight(), max_h+1);
-
-
-        if(!something_happens) continue;
-        if( i % (count_of_test/10) == 0) { printf("."); fflush(stdout); }
-        sum_h += max_h;
-        sum_n += curr_n;
-        count++;
-    }
-    
-
-    printf("  <h> = %4lf  <n> = %4lf", sum_h * 1. / count, sum_n * 1. / count); fflush(stdout);
+void accumulate(double* not_optimize) {
+    double ans = 0;
+    for(int i = 0; i < 100; i++) ans += not_optimize[i]*(i+1);
+    cout << "Count test: " << ans << endl;
 }
 
-
-
 int main() {
-    {
-        printf("TIME TEST TREE: "); 
-        auto start = chrono::high_resolution_clock::now();
-        for(int chance = 5; chance < 91; chance++)  tree_test(100000, chance);
-        auto stop = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-        cout << duration.count() << endl;
-    }
-    {
-        printf("TIME TEST SET : "); 
-        auto start = chrono::high_resolution_clock::now();
-        for(int chance = 5; chance < 91; chance++)  set_test(100000, chance);
-        auto stop = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-        cout << duration.count() << endl;
-    }
+    double not_optimize[100] = {0};
+    // START(tree)
+    // for(int chance = 5; chance < 91; chance++) indel_test_trust<tree<char>>(500000, chance, not_optimize + chance);
+    // END
+    // accumulate(not_optimize);
 
+    START(set)
+    for(int chance = 5; chance < 91; chance++) indel_test_trust<set<char>>(10000, chance, not_optimize + chance);
+    END
+    accumulate(not_optimize);
 
+    START(BinaryTree)
+    for(int chance = 5; chance < 91; chance++) indel_test_trust<s21::BinaryTree<char, char>>(10000, chance, not_optimize + chance);
+    END
+    accumulate(not_optimize);
 
-#ifdef TEST
+    cout << "\nIS CORRECT WORK?:" << endl;
     for(int chance = 5; chance < 91; chance++) {
-        printf("\nchance = %3d: ", chance); fflush(stdout);
-        test_updt_h(100000, chance);
+        printf("    del chance = %3d: ", chance); fflush(stdout);
+        indel_test_verify<tree<char>>(100000, chance, not_optimize);
     }
-
     cout << "\nMeow!" << endl;
     return 0;
-#endif
-
 }
