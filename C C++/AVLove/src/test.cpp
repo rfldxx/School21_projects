@@ -69,21 +69,26 @@ void accumulate(double* not_optimize) {
 }
 
 int main() {
+    int Quantity = 100000, seeds[100];
+    for(int i = 0; i < 100; i++) seeds[i] = rand();
     double not_optimize[100] = {0};
-    // START(tree)
-    // for(int chance = 5; chance < 91; chance++) indel_test_trust<tree<char>>(500000, chance, not_optimize + chance);
-    // END
-    // accumulate(not_optimize);
+    
+    START(tree)
+    for(int chance = 5; chance < 91; chance++) 
+        indel_test_trust<tree<char>>(Quantity, chance, not_optimize + chance, seeds[chance]);
+    END
+    accumulate(not_optimize);
 
     START(set)
-    for(int chance = 5; chance < 91; chance++) indel_test_trust<set<char>>(10000, chance, not_optimize + chance);
+    for(int chance = 5; chance < 91; chance++) 
+        indel_test_trust<set<char>>(Quantity, chance, not_optimize + chance, seeds[chance]);
     END
     accumulate(not_optimize);
 
-    START(BinaryTree)
-    for(int chance = 5; chance < 91; chance++) indel_test_trust<s21::BinaryTree<char, char>>(10000, chance, not_optimize + chance);
-    END
-    accumulate(not_optimize);
+    // START(BinaryTree)
+    // for(int chance = 5; chance < 91; chance++) indel_test_trust<s21::BinaryTree<char, char>>(10000, chance, not_optimize + chance);
+    // END
+    // accumulate(not_optimize);
 
     cout << "\nIS CORRECT WORK?:" << endl;
     for(int chance = 5; chance < 91; chance++) {
