@@ -54,47 +54,62 @@ pair<int, bool> calc_h(TreeIterator iter) {
 #include "test.h"
 
 
-#define START(T) {                                      \
-    printf("TIME  TEST %10s:  ", #T); fflush(stdout);    \
-    auto start = chrono::high_resolution_clock::now();
+#define START { auto start = chrono::high_resolution_clock::now();
 
 #define END                                             \
     auto stop  = chrono::high_resolution_clock::now();  \
-    cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count() << endl; }
+    cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count(); }
 
-void accumulate(double* not_optimize) {
+double accumulate(double* not_optimize) {
     double ans = 0;
     for(int i = 0; i < 100; i++) ans += not_optimize[i]*(i+1);
-    cout << "Count test: " << ans << endl;
+    return ans;
+}
+
+
+// ==========================================
+const int Repeats [] = { 10000,   10000}; 
+const int Quantity[] = {100000, 1000000};
+// ==========================================
+
+int seeds[100];
+double not_optimize[100] = {0};
+
+
+void chance_interval(int epoch, int a, int b = -1) {
+    if(b == -1) b = a+10;
+
+    printf("     [%3d, %3d, ", a, b);
+    START
+    for(int chance = a; chance < b; chance++) 
+        indel_test_trust<set<double>>(Repeats[epoch], Quantity[epoch], chance, not_optimize + chance, seeds[chance]);
+    END
+    double check_accumulate1 = accumulate(not_optimize);
+
+    printf(", ");
+    START
+    for(int chance = a; chance < b; chance++) 
+        indel_test_trust<tree<double>>(Repeats[epoch], Quantity[epoch], chance, not_optimize + chance, seeds[chance]);
+    END
+    double check_accumulate2 = accumulate(not_optimize);
+    printf("]\n");
+
+    if(check_accumulate1 != check_accumulate2) printf("ERROR");
 }
 
 int main() {
-    int Quantity = 100000, seeds[100];
-    for(int i = 0; i < 100; i++) seeds[i] = rand();
-    double not_optimize[100] = {0};
-    
-    START(tree)
-    for(int chance = 5; chance < 91; chance++) 
-        indel_test_trust<tree<char>>(Quantity, chance, not_optimize + chance, seeds[chance]);
-    END
-    accumulate(not_optimize);
+ 
+    for(int epoch = 0; epoch < sizeof(Repeats) / sizeof(int); epoch++) {
+        for(int i = 0; i < 100; i++) seeds[i] = rand();
 
-    START(set)
-    for(int chance = 5; chance < 91; chance++) 
-        indel_test_trust<set<char>>(Quantity, chance, not_optimize + chance, seeds[chance]);
-    END
-    accumulate(not_optimize);
-
-    // START(BinaryTree)
-    // for(int chance = 5; chance < 91; chance++) indel_test_trust<s21::BinaryTree<char, char>>(10000, chance, not_optimize + chance);
-    // END
-    // accumulate(not_optimize);
-
-    cout << "\nIS CORRECT WORK?:" << endl;
-    for(int chance = 5; chance < 91; chance++) {
-        printf("    del chance = %3d: ", chance); fflush(stdout);
-        indel_test_verify<tree<char>>(100000, chance, not_optimize);
+        printf("== repeat: %7d    quantity: %7d  =========\n", Repeats[epoch], Quantity[epoch]);
+        chance_interval(epoch,  5, 10);
+        chance_interval(epoch, 10, 15);
+        chance_interval(epoch, 15, 25);
+        chance_interval(epoch, 25, 35);
+        chance_interval(epoch, 35, 45);
     }
+
     cout << "\nMeow!" << endl;
     return 0;
 }

@@ -11,29 +11,28 @@
 
 
 template <typename T>
-void CAT(indel_test_, NAME) (int count_of_test, int chance_to_del, double* not_optimize, int seed = 42) {
+void CAT(indel_test_, NAME) (int count_of_test, int count_of_value, int chance_to_del, double* not_optimize, int seed = 42) {
     srand(seed);
     T test;
 
 #ifdef CHECKING
-    set<char> ideal;
+    set<typename T::value_type> ideal;
 #endif
 
-    vector<char> values;
-    int n = 80;
-    for(int i = 0; i < n; i++) {
-        values.push_back('#'+i);
-        test.insert('#'+i);
-#ifdef CHECKING
-        ideal.insert('#'+i);
-#endif
-    }
+    vector<typename T::value_type> values;
+    int n = count_of_value;
+    for(int i = 0; i < n; i++) 
+        values.push_back( rand() * 1. / (abs(rand()) + 1) ); //  <- по идеи бы сюда тоже шаблоную функцию, но лень
+
+
+    // printf("after filling:  "); fflush(stdout);
+    // auto start = chrono::high_resolution_clock::now();
 
     int sum_h = 0, sum_n = 0, count = 0;
     for(int i = 0; i < count_of_test; ) {
         bool something_happens;
         bool mode = (rand()%101 < chance_to_del);
-        char x = values[rand()%n];
+        auto x = values[rand()%n];
         if( rand()%101 < chance_to_del ) {
             something_happens = test.erase (x);
 #ifdef CHECKING
@@ -64,12 +63,17 @@ void CAT(indel_test_, NAME) (int count_of_test, int chance_to_del, double* not_o
 
         RET(max_h+1 != test.end().hight(), "ERROR WITH hight of ROOT!!!!!  %d != %d", test.end().hight(), max_h+1);
 
-        if(!something_happens) continue;
+        if(!something_happens) { continue; }
         if( i % (count_of_test/10) == 0) { PRNT("."); }
         sum_h += max_h;
         sum_n += curr_n;
         count++;
+
+        // if( !i % (count_of_test/10) ) { printf("."); fflush(stdout); }
     }
+
+    // auto stop  = chrono::high_resolution_clock::now();  
+    // cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count() << endl;
     
 #ifdef CHECKING
     printf("  <h> = %4lf  <n> = %4lf\n", sum_h * 1. / count, sum_n * 1. / count); fflush(stdout);
