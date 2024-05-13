@@ -54,11 +54,13 @@ pair<int, bool> calc_h(TreeIterator iter) {
 #include "test.h"
 
 
-#define START { auto start = chrono::high_resolution_clock::now();
+// ==========================================
+const int Repeats [] = {  50000,    50000}; 
+const int Quantity[] = {1000000, 10000000};
+// ==========================================
 
-#define END                                             \
-    auto stop  = chrono::high_resolution_clock::now();  \
-    cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count(); }
+int seeds[100];
+double not_optimize[100] = {0};
 
 double accumulate(double* not_optimize) {
     double ans = 0;
@@ -67,14 +69,10 @@ double accumulate(double* not_optimize) {
 }
 
 
-// ==========================================
-const int Repeats [] = { 10000,   10000}; 
-const int Quantity[] = {100000, 1000000};
-// ==========================================
-
-int seeds[100];
-double not_optimize[100] = {0};
-
+#define START { auto start = chrono::high_resolution_clock::now();
+#define END                                             \
+    auto stop  = chrono::high_resolution_clock::now();  \
+    cout << chrono::duration_cast<chrono::milliseconds>(stop - start).count(); }
 
 void chance_interval(int epoch, int a, int b = -1) {
     if(b == -1) b = a+10;
@@ -97,12 +95,13 @@ void chance_interval(int epoch, int a, int b = -1) {
     if(check_accumulate1 != check_accumulate2) printf("ERROR");
 }
 
+
 int main() {
- 
     for(int epoch = 0; epoch < sizeof(Repeats) / sizeof(int); epoch++) {
         for(int i = 0; i < 100; i++) seeds[i] = rand();
 
         printf("== repeat: %7d    quantity: %7d  =========\n", Repeats[epoch], Quantity[epoch]);
+        printf("%*s stl set | my AVL\n", 11, "");
         chance_interval(epoch,  5, 10);
         chance_interval(epoch, 10, 15);
         chance_interval(epoch, 15, 25);
