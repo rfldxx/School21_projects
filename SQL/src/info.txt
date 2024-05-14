@@ -1,0 +1,173 @@
+// коментарии как в си, только надо ставить пробел после "//"
+//
+// FILE FORMAT:
+//   --------------------------------------------------------------------------------------------------------
+//   |  friends:  // <- порядок спецификаторов любой
+//   |      peer_2 peer_2  ...  peer_m  // табы и пробелы нигде не влияют, важны только ENTER
+//   |    peer_1     peer_2 ... peer_n  // в каждой строчке каждый пир дружит с каждым
+//   |
+//   |  recommendations:
+//   |     peer   recomend_1 recomend_2 ... // формат: пир, далее те кого он рекомендует
+//   |     peer  =recomend_1 ...            // '=' перед ником - значит они рекомендуют взаимно 
+//   |                                      // '<' - значит наоборот recomend_i рекомендует peer
+//   |
+//   |  timetracking:
+//   |      date peer1   peer1   // когда пишется имя пира, то он поочередно входит/выходит из корпуса
+//   |      date peer1   peer2   // не обязательно вручную прописывать выход в конце дня
+//   |      date peer1   peer2   //   (в таком случае, те кто остался в кампусе выходят в порядке "FIFO")
+//   |      date peer1 3 peer2   // цифра -  значит прошлая вещь повторяется столько раз
+//   |      date   x     peer1   //   x   -  увеличивает "текущее" время на 1 час
+//   |                           // на каждой новой строчке, т.е. на каждой дате, время начинается с '00:10'
+//   |                           // между каждой записью  проходит 1 час
+//   |
+//   |  checks: date
+//   |     cheked_peer number_of_task inspector1 inspector2 ... // проще показать на примерах 
+//   |     cheked_peer  2  peer_1  peer_2  ~     // peer_1 - проверил, peer_2 - только начал
+//   |     cheked_peer  2  peer_1  peer_2  #     // peer_1 - проверил, peer_2 - зафейлил
+//   |     cheked_peer  2  peer_1  peer_2  +     // peer_1 - проверил, peer_2 - зачел, итоговый % больше 80
+//   |     cheked_peer  2  peer_1  peer_2  -     // peer_1 - проверил, peer_2 - зачел, итоговый % меньше 80
+//   |     cheked_peer  2  peer_1  peer_2  V ~   // peer_1 - проверил, peer_2 - зачел, verter - только начал
+//   |                                           // и так далее ...
+//   |
+//   --------------------------------------------------------------------------------------------------------
+//
+//  Для учета transferredpoints в конце надо будет вручную запустить:
+//      DELETE FROM transferredpoints;
+//      INSERT INTO transferredpoints
+//      SELECT ROW_NUMBER() OVER() AS id, *
+//      FROM (  SELECT checkingpeer, peer, COUNT(*)
+//              FROM checks JOIN p2p ON "check" = checks.id and state != 'start'
+//              GROUP by 1, 2  );
+
+
+//  1 Himori
+//  2 Kuruho 
+//  3 Kunori
+//  4 Reosao
+//  5 Tasami
+//  6 Ruriru 
+//  7 Ubluwa 
+//  8 Zatani
+//  9 Kaotku
+// 10 Ayachi
+
+
+friends:
+  Himori Kuruho Kunori
+  Kuruho Reosao Tasami
+  Ruriru Ubluwa Zatani
+  Ubluwa Kaotku
+  Zatani Kaotku
+  Kaotku Ayachi
+
+recommendations:
+  Himori  Ruriru =Zatani <Kaotku
+  Kunori  Ubluwa <Tasami <Zatani
+  Reosao =Tasami <Kuruho
+  Ruriru  Zatani
+  Ayachi  Zatani <Kaotku
+
+
+// === [ месяц 01 ] ====================================================================================================
+timetracking:
+  2022-01-01 x 9 Himori 3 Kuruho 2 Himori 2 Kuruho
+  2022-01-02 x 9 Himori   Kuruho   Ayachi
+  2022-01-03 x 7 Ayachi 3 Kaotku   Himori   Ruriru 3 Zatani
+  2022-01-04 x 7 Ayachi   Kaotku   Zatani   Ubluwa 2 Kaotku   Zatani 2 Ubluwa   Kaotku
+  2022-01-05 x 6 Ayachi 3 Kunori 2 Reosao 3 Tasami 2 Reosao 2 Tasami
+
+checks: 2022-01-01
+  Himori 1 Zatani #
+  Ruriru 1 Kuruho #
+  Ubluwa 1 Kunori -
+
+checks: 2022-01-02
+  Ayachi 1 Kaotku +
+  Kuruho 1 Tasami +
+  Himori 1 Zatani #
+  Himori 1 Kuruho +
+
+checks: 2022-01-03
+  Kaotku 1 Ruriru +
+  Ayachi 1 Reosao +
+  Reosao 1 Himori #
+  Tasami 1 Ruriru +
+  Zatani 1 Himori #
+
+checks: 2022-01-04
+  Himori 2 Kuruho Ubluwa #
+  Kaotku 2 Kunori #
+  Reosao 1 Tasami +
+  Tasami 2 Himori Kuruho V -
+
+checks: 2022-01-05
+  Zatani 1 Ruriru +
+  Kunori 1 Ubluwa -
+  Kunori 1 Reosao +
+  Ubluwa 1 Ayachi +
+  Ruriru 1 Kaotku +
+  Kaotku 2 Zatani Ruriru V -
+
+
+// === [ месяц 02 ] ====================================================================================================
+timetracking:
+  2022-02-01 x  5  Zatani   Kunori   Tasami   Zatani Himori 3 Ubluwa
+  2022-02-02 x 10  Reosao   Ubluwa   Kunori 2 Tasami Ayachi 2 Kuruho
+  2022-02-03       Kaotku 2 Kunori 2 Reosao 2 Kaotku Ruriru
+  2022-02-04       Ruriru 3 Kunori 2 Ruriru   Zatani Ayachi
+  2022-02-05       Ayachi   Himori 4 Kuruho 2 Ubluwa Kaotku   Tasami
+
+checks: 2022-02-01
+  Himori 2 Ayachi Reosao V +
+  Ubluwa 2 Zatani #
+  Himori 5 Ruriru #
+  Ayachi 2 Himori Kaotku V -
+  Ubluwa 2 Kunori Himori V +
+  Reosao 2 Kuruho Ruriru V -
+  Himori 5 Ubluwa V #
+  Ruriru 2 Reosao Kunori V #
+  Himori 5 Reosao V +
+
+checks: 2022-02-02
+  Kuruho 2 Kunori Himori V +
+  Kunori 2 Kuruho Himori V +
+  Zatani 2 Kuruho #
+  Reosao 3 Tasami V #
+  Ubluwa 3 Ruriru V +
+  Zatani 2 Ubluwa Tasami V -
+
+checks: 2022-02-03
+  Himori 3 Ruriru V +
+  Kuruho 4 Ruriru V +
+  Reosao 3 Zatani V +
+  Tasami 5 Ayachi V +
+  Kunori 3 Ayachi #
+  Kunori 3 Himori V -
+
+checks: 2022-02-04
+  Reosao  6 Tasami Kuruho +
+  Zatani 10 Himori #
+  Zatani 10 Ruriru Kaotku Ayachi V +
+  Ubluwa 10 Zatani Reosao #
+  Reosao  6 Zatani Himori +
+  Kuruho  7 Himori Kaotku +
+
+checks: 2022-02-05
+  Kuruho  8 Himori Kunori V +
+  Kunori 10 Himori Reosao Ruriru V +
+  Reosao  6 Tasami Zatani -
+  Reosao  6 Tasami Kunori +
+  Ubluwa 10 Zatani Ruriru Ayachi V +
+  Ayachi  4 Himori #
+  Ayachi  4 Kaotku V -
+
+// === [ месяц 03 ] ====================================================================================================
+checks: 2022-03-01
+  Himori 5 Ubluwa V +
+  Ruriru 2 Reosao Kunori V #
+  Himori 5 Reosao V +
+
+checks: 2022-03-02
+  Ubluwa 1 Reosao +
+  Ubluwa 1 Himori #
+  
