@@ -116,7 +116,7 @@ private:
 
   const char colors[n_memory][8] = {"#a7fc00", "#4f7942", "#900020", "#945d0b", "#627478"};
 
-  char LOG_INFO[1000] =
+  char LOG_INFO[10000] =
       "<pre><font color=\"red\">ERROR:<br>"
       "</font>x + 1 - 9 * <font color=\"red\">s</font> <br>"
       "<font color=\"red\">            ^</font><br>"
