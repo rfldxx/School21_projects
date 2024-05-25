@@ -50,8 +50,7 @@ Decimal число может быть реализовано в виде чет
 ### Пример:
 
 ```c
-typedef struct 
-{
+typedef struct {
     int bits[4];
 } s21_decimal;
 ```
