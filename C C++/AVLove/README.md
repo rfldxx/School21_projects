@@ -39,7 +39,8 @@ $\text{ } \stackrel{(*)}{=} \text{ }$   $\text{ . . . }$   $\text{ } = \text{ }$
 </tr> </table>
 
 Оценивая сверху возьмем глубину $h \approx \ln_{\varphi} n$ $\text{ }$  $\Rightarrow$  $\text{ }$
-$a_h \approx  2 ^ {\frac{ \ln 2 \varphi} {\ln \varphi} } \cdot n \approx 5.43 n$
+$a_h \approx  2 ^ {\frac{ \ln 2 \varphi} {\ln \varphi} } \cdot n \approx 5.43 n$ \
+Однако, численный расчет показал, что для рандомно заполненого дерева, кол-во операций удивительно близко к $2 n$ (выходит на плато c $n \sim 10^6$). Т.е. также как и для идеального дерева с тем же кол-вом вершин.
 
 $\text{ }$
 
