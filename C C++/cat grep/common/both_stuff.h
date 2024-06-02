@@ -26,55 +26,44 @@
 #define MAX_COUNT_OF_COMMANDS 10
 const int N_COMMANDS = sizeof(COMMANDS_LIST) / sizeof(char) - 1;
 
-#define cute_printf(space, info)         \
-  if ((space) > 0) {                     \
-    if (info != 0)                       \
-      printf(_Generic(info, int          \
-                      : "%*d%c", default \
-                      : "%*s%c"),        \
-             space, info, SEP);          \
-    else if (CUTEE)                      \
-      printf("%*c", space + 1, SEP);     \
+#define cute_printf(space, info)                    \
+  if  ((space) > 0) {                               \
+    if  (info != 0)  printf(_Generic(info, int : "%*d%c", default : "%*s%c"), space, info, SEP); \
+    else if (CUTEE)  printf("%*c", space + 1, SEP); \
   }
 
-#define CreateMasiv(a, n, type) \
-  type *a = (type *)malloc(((n) ? (n) : 1) * sizeof(type))
+#define CreateMasiv(a, n, type) type *a = (type *)malloc(((n) ? (n) : 1) * sizeof(type))
 
-void update_max(int *a, int b) {
-  if (b > *a) *a = b;
-}
-#define SIMULAR_HEAD                                                \
-  CreateMasiv(files, argc, char *);                                 \
-  CreateMasiv(files_type, argc, int);                               \
-  bool commands[MAX_COUNT_OF_COMMANDS] = {0};                       \
-  int files_count = parse(argc, argv, commands, files, files_type); \
-  bool write_error = (N_COMMANDS < 8) | (!commands[7]);             \
-  if (N_COMMANDS > 8 && re_gyve(files_count) > 0 &&                 \
-      !(commands[0] | commands[8])) {                               \
-    files_type[0] = 2;                                              \
-    files_count--;                                                  \
-  }                                                                 \
-                                                                    \
-  int longest_name = 0, digits_lines = 0, pattern_count = 0;        \
-  for (int i = 0; files_count > 0 && files_type[i] != -1; i++)      \
-    if (files_type[i] == 1) {                                       \
-      update_max(&longest_name, strlen(files[i]));                  \
-      update_max(&digits_lines, lines_n_digits(files[i], 1));       \
-    } else if (files_type[i])                                       \
+void update_max(int *a, int b) { if (b > *a) *a = b; }
+
+#define SIMULAR_HEAD                                                 \
+  CreateMasiv(files     , argc, char *);                             \
+  CreateMasiv(files_type, argc, int   );                             \
+  bool commands[MAX_COUNT_OF_COMMANDS] = {0};                        \
+  int  files_count = parse(argc, argv, commands, files, files_type); \
+  bool write_error = (N_COMMANDS < 8) | (!commands[7]);              \
+  if (N_COMMANDS > 8 && re_gyve(files_count) > 0 && !(commands[0] | commands[8])) { \
+    files_type[0] = 2;                                               \
+    files_count--;                                                   \
+  }                                                                  \
+                                                                     \
+  int longest_name = 0, digits_lines = 0, pattern_count = 0;         \
+  for (int i = 0; files_count > 0 && files_type[i] != -1; i++)       \
+    if (files_type[i] == 1) {                                        \
+      update_max(&longest_name, strlen(files[i]));                   \
+      update_max(&digits_lines, lines_n_digits(files[i], 1));        \
+    } else if (files_type[i])                                        \
       pattern_count += files_type[i] == 3 ? lines_n_digits(files[i], 0) : 1;
 
-#define FILES_ITERATION(start, something, ...)                          \
-  {                                                                     \
-    for (int i = start; files_type[i] != -1; i++)                       \
-      if (files_type[i] == 1) {                                         \
-        FILE *file = fopen(files[i], "r");                              \
-        something(file, files[i], commands, longest_name, digits_lines, \
-                  __VA_ARGS__);                                         \
-        fclose(file);                                                   \
-      } else if (write_error && !files_type[i])                         \
-        printf("Problems with file: %s\n", files[i]);                   \
-  }                                                                     \
-  free(files);                                                          \
+#define FILES_ITERATION(start, something, ...)      \
+{  for (int i = start; files_type[i] != -1; i++)                                                  \
+      if (files_type[i] == 1) {                                                                   \
+        FILE *file = fopen(files[i], "r");                                                        \
+        something(file, files[i], commands, longest_name, digits_lines, __VA_ARGS__);             \
+        fclose(file);                                                                             \
+      } else if (write_error && !files_type[i]) printf("Problems with file: %s\n", files[i]);   } \
+                                                    \
+  free(files);                                      \
   free(files_type);
 
 // what = 0 - кол-во строк в файле
@@ -85,11 +74,9 @@ int lines_n_digits(char *filename, bool what) {
   bool w = 0;
   char a;
   while (fscanf(f, "%c", &a) == 1)
-    if (a == '\n') {
-      l++;
-      w = 0;
-    } else
-      w = 1;
+    if (a == '\n') { l++; w = 0; } 
+    else w = 1;
+  
   fclose(f);
   l -= !w;
 
@@ -101,23 +88,18 @@ int lines_n_digits(char *filename, bool what) {
 
 bool is_file_open(char *name) {
   FILE *f = fopen(name, "r");
-  if (f != NULL) {
-    fclose(f);
-    return 1;
-  }
+  if (f != NULL) { fclose(f); return 1; }
   return 0;
 }
 
-int puto(int i) { return i ? 1 << (8 * sizeof(int) - i) : 0; }
+int    puto(int i) { return i ? 1 << (8 * sizeof(int) - i) : 0; }
 int re_gyve(int l) { return (l << 3) >> 3; }
 void notify_troble(int l) {
-  printf("We are lose the job:\n%s",
-         !re_gyve(l) ? "\t• no file's to output\n" : "");
+  printf("We are lose the job:\n%s", !re_gyve(l) ? "\t• no file's to output\n" : "");
   printf("%s", l & puto(2) ? "\t• not exist flags\n" : "");
   printf("%s", l & puto(3) ? "\t• '-e' or '-f' at the end of input\n" : "");
 }
 
-// getopts
 
 // a.out -e dcscd -ef mads
 //  files_type:
@@ -140,10 +122,7 @@ int parse(int n, char **input, bool *commands, char **files, int *files_type) {
 #ifdef L
       if (input[i][1] == '-' || input[i][1] == 'E' || input[i][1] == 'T')
         for (int j = 0; j < N_COMMANDS; j++) {
-          if (!strcmp(input[i] + 1, long_commands[j])) {
-            commands[j] = 1;
-            break;
-          }
+          if (!strcmp(input[i] + 1, long_commands[j])) { commands[j] = 1; break; }
           is_corect &= (j < N_COMMANDS - 1);
         }
       else
@@ -152,28 +131,19 @@ int parse(int n, char **input, bool *commands, char **files, int *files_type) {
           for (int j = 0; j < N_COMMANDS; j++) {
             if (list[j] == *pos) {
 #ifndef L
-              //если это 'e' или 'f' в grep то надо запоминать шаблон и выходить
+              // если это 'e' или 'f' в grep то надо запоминать шаблон и выходить
               if (list[j] == 'e' || list[j] == 'f') {
-                files[wf] =
-                    *(pos + 1)
-                        ? pos + 1
-                        : input[++i < n ? i : 0];  //а что если мы передали:
-                                                   //|grep example.txt -e| и всё
-                if (i == n)
-                  return puto(1) | puto(2 * !is_corect) | puto(3) |
-                         files_count;  //этот флаг ('-e' или '-f') в конце ввода
-                                       //- форсировано вырубаем всё
-                files_type[wf] =
-                    (list[j] == 'e') ? 2 : 3 * is_file_open(files[wf]);
+                files[wf] = *(pos + 1) ? pos + 1 : input[++i < n ? i : 0];  // а что если мы передали: |grep example.txt -e| и всё
+                
+                if (i == n) // этот флаг ('-e' или '-f') в конце ввода  -  форсировано вырубаем всё
+                  return puto(1) | puto(2 * !is_corect) | puto(3) | files_count;  
+                
+                files_type[wf] = (list[j] == 'e') ? 2 : 3 * is_file_open(files[wf]);
                 wf++;
-                *(pos--) = '\0';  //вместо этого "флага" ставим конец строки и
-                                  //из-за этого вырубиться for(pos)
+                *(pos--) = '\0';  //вместо этого "флага" ставим конец строки и из-за этого вырубиться for(pos)
               }
 #else
-            commands[5] |=
-                (list[j] == 'e') ||
-                (list[j] ==
-                 't');  //если это '-e' или '-t' в cat, то надо включить '-v'
+              commands[5] |= (list[j] == 'e') || (list[j] == 't');  // если это '-e' или '-t' в cat, то надо включить '-v'
 #endif
               commands[j] = 1;
               break;
